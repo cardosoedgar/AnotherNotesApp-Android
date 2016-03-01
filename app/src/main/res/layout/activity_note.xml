@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context="com.cardosoedgar.anothernotesapp.NoteActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+        <EditText
+            android:paddingLeft="@dimen/row_padding"
+            android:paddingStart="@dimen/row_padding"
+            android:paddingEnd="@dimen/row_padding"
+            android:paddingRight="@dimen/row_padding"
+            android:background="@android:color/transparent"
+            android:singleLine="true"
+            android:maxLength="140"
+            android:textColorHint="@color/white_shaded"
+            android:maxLines="1"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:hint="@string/hint_title"
+            android:inputType="text"
+            android:id="@+id/editTextTitle"
+            android:layout_width="match_parent"
+            android:layout_height="40dp" />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <include layout="@layout/content_note" />
+
+</android.support.design.widget.CoordinatorLayout>
