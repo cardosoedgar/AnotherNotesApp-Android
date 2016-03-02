@@ -6,11 +6,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
 
 import com.cardosoedgar.anothernotesapp.adapter.NoteAdapter;
+import com.cardosoedgar.anothernotesapp.interfaces.BottomSheetInterface;
 import com.cardosoedgar.anothernotesapp.model.Note;
+import com.flipboard.bottomsheet.BottomSheetLayout;
+import com.flipboard.bottomsheet.commons.MenuSheetView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +24,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.Realm;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements BottomSheetInterface {
 
     private final int NEW_NOTE = 1;
 
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Bind(R.id.toolbar) Toolbar toolbar;
     @Bind(R.id.recyclerView) RecyclerView recyclerView;
+    @Bind(R.id.bottomsheet) BottomSheetLayout bottomSheet;
 
     @Inject Realm realm;
 
@@ -101,13 +103,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        switch (item.getOrder()) {
-            case 0: //delete
-                deleteNote(item.getItemId()); break;
-            default:
-                break;
-        }
-        return super.onContextItemSelected(item);
+    public void showBottomSheet(int position) {
+        bottomSheet.setPeekOnDismiss(true);
+        MenuSheetView menuSheetView = new MenuSheetView(this, MenuSheetView.MenuType.LIST, "",
+                item -> {
+                    if (bottomSheet.isSheetShowing()) {
+                        bottomSheet.dismissSheet();
+                    }
+                    deleteNote(position);
+                    return true;
+                });
+        menuSheetView.inflateMenu(R.menu.bottom_sheet);
+        bottomSheet.showWithSheetView(menuSheetView);
     }
 }

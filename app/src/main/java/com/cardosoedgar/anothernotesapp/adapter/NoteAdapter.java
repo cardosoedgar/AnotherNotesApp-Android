@@ -4,12 +4,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.cardosoedgar.anothernotesapp.interfaces.BottomSheetInterface;
 import com.cardosoedgar.anothernotesapp.NoteActivity;
 import com.cardosoedgar.anothernotesapp.R;
 import com.cardosoedgar.anothernotesapp.model.Note;
@@ -53,13 +53,14 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
         return noteList.size();
     }
 
-    public class NoteViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnCreateContextMenuListener {
+    public class NoteViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
         @Bind(R.id.title)
         TextView title;
         @Bind(R.id.content) TextView content;
 
         @BindString(R.string.new_note) String stringNote;
+        @BindString(R.string.no_title) String noTitle;
 
         Note note;
 
@@ -67,7 +68,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
             super(itemView);
             ButterKnife.bind(this, itemView);
             itemView.setOnClickListener(this);
-            itemView.setOnCreateContextMenuListener(this);
+            itemView.setOnLongClickListener(this);
         }
 
         @Override
@@ -83,14 +84,17 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
         }
 
         private void setViews() {
-            title.setText(note.getTitle());
+            String stringTitle = note.getTitle();
+            title.setText(stringTitle.isEmpty() ? noTitle : stringTitle);
             content.setText(note.getContent());
         }
 
         @Override
-        public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
+        public boolean onLongClick(View v) {
+            BottomSheetInterface bottomSheet = (BottomSheetInterface) context;
             int position = noteList.indexOf(note);
-            menu.add(0, position, 0, "Delete");//groupId, itemId, order, title
+            bottomSheet.showBottomSheet(position);
+            return true;
         }
     }
 }
