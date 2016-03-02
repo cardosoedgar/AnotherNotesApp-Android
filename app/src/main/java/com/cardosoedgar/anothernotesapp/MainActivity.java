@@ -71,6 +71,19 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(intent, NEW_NOTE);
     }
 
+    private void deleteNote(int itemId) {
+        Note note = noteList.get(itemId);
+        noteList.remove(note);
+        noteAdapter.notifyItemRemoved(itemId);
+        removeFromRealm(note);
+    }
+
+    private void removeFromRealm(Note note) {
+        realm.beginTransaction();
+        note.removeFromRealm();
+        realm.commitTransaction();
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -85,5 +98,16 @@ public class MainActivity extends AppCompatActivity {
             noteList.add(newNote);
             noteAdapter.notifyItemInserted(noteList.size()-1);
         }
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        switch (item.getOrder()) {
+            case 0: //delete
+                deleteNote(item.getItemId()); break;
+            default:
+                break;
+        }
+        return super.onContextItemSelected(item);
     }
 }
