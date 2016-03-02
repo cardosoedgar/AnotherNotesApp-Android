@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingTop="@dimen/row_padding"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.cardosoedgar.anothernotesapp.NoteActivity"
     tools:showIn="@layout/activity_note">
@@ -18,7 +19,7 @@
         android:singleLine="false"
         android:textColor="@color/textColorDark"
         android:textStyle="normal"
-        android:textSize="14sp"
+        android:textSize="16sp"
         android:hint="@string/hint_content"
         android:inputType="textCapSentences|textMultiLine"
         android:id="@+id/editTextContent"

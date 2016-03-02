@@ -26,13 +26,11 @@ public class NoteActivity extends AppCompatActivity {
     @Bind(R.id.toolbar) Toolbar toolbar;
     @Bind(R.id.editTextTitle) EditText editTextTitle;
     @Bind(R.id.editTextContent) EditText editTextContent;
-
     @BindString(R.string.new_note) String stringNote;
 
     @Inject Realm realm;
 
     Note note;
-
     CompositeSubscription subscriptions;
 
     @Override
@@ -59,9 +57,19 @@ public class NoteActivity extends AppCompatActivity {
             createNewNoteFromRealm();
             return;
         }
+        setNote(id);
+        setCursorToEnd();
+    }
+
+    private void setNote(int id) {
         note = realm.where(Note.class).equalTo("id", id).findFirst();
         editTextTitle.setText(note.getTitle());
         editTextContent.setText(note.getContent());
+    }
+
+    private void setCursorToEnd() {
+        editTextTitle.setSelection(editTextTitle.getText().length());
+        editTextContent.setSelection(editTextContent.getText().length());
     }
 
     private void createNewNoteFromRealm() {
@@ -133,8 +141,22 @@ public class NoteActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
+    public void onBackPressed() {
         finishEditing();
+        super.onBackPressed();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if(id == android.R.id.home) {
+            finishEditing();
+        }
+        return true;
+    }
+
+    @Override
+    protected void onDestroy() {
         subscriptions.unsubscribe();
         super.onDestroy();
     }

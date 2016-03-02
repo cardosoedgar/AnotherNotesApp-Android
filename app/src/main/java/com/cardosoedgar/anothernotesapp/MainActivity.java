@@ -86,9 +86,4 @@ public class MainActivity extends AppCompatActivity {
             noteAdapter.notifyItemInserted(noteList.size()-1);
         }
     }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
 }
