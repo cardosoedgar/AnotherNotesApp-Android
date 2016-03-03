@@ -31,7 +31,6 @@ public class NoteActivity extends AppCompatActivity {
     @Inject Realm realm;
 
     Note note;
-    CompositeSubscription subscriptions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +41,6 @@ public class NoteActivity extends AppCompatActivity {
         setupToolbar();
 
         checkIntentForNote();
-        addSubscriptions();
     }
 
     private void setupToolbar() {
@@ -78,30 +76,9 @@ public class NoteActivity extends AppCompatActivity {
         realm.commitTransaction();
     }
 
-    private void addSubscriptions() {
-        subscriptions = new CompositeSubscription();
-        subscriptions.add(RxTextView.textChanges(editTextTitle)
-                .debounce(5, TimeUnit.SECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
-                .distinctUntilChanged()
-                .filter((text) -> text.length() > 0)
-                .subscribe((text) -> {
-                    save();
-                }));
-
-        subscriptions.add(RxTextView.textChanges(editTextContent)
-                .debounce(5, TimeUnit.SECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
-                .distinctUntilChanged()
-                .filter((text) -> text.length() > 0)
-                .subscribe((text) -> {
-                    save();
-                }));
-    }
-
     private void save() {
         realm.beginTransaction();
-        if(!(note.getId() > 0)) {
+        if(note.getId() == 0) {
             Number maxId = realm.where(Note.class).max("id");
             int id = maxId == null ? 1 : maxId.intValue() + 1;
             note.setId(id);
@@ -114,28 +91,29 @@ public class NoteActivity extends AppCompatActivity {
 
     private void finishEditing() {
         updateNoteBeforeFinish();
-        if(!(note.getId() > 0)) {
-            removeFromRealm();
+        if(note.getId() == 0) {
+            removeFromDatabase();
             finish();
             return;
         }
+        createIntentAndFinish();
+    }
 
+    private void createIntentAndFinish() {
         Intent intent = getIntent();
         intent.putExtra(stringNote, note.getId());
         setResult(RESULT_OK, intent);
         finish();
     }
 
-    private void removeFromRealm() {
+    private void removeFromDatabase() {
         realm.beginTransaction();
         note.removeFromRealm();
         realm.commitTransaction();
     }
 
     private void updateNoteBeforeFinish() {
-        String title = editTextTitle.getText().toString();
-        String content = editTextContent.getText().toString();
-        if(!title.isEmpty() || !content.isEmpty()) {
+        if(isFieldsNotEmpty()) {
             save();
         }
     }
@@ -156,8 +134,17 @@ public class NoteActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        subscriptions.unsubscribe();
-        super.onDestroy();
+    protected void onPause() {
+        updateNoteBeforeFinish();
+        super.onPause();
+    }
+
+    private boolean isFieldsNotEmpty() {
+        return !editTextTitle.getText().toString().isEmpty() || !editTextContent.getText().toString().isEmpty();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
     }
 }
